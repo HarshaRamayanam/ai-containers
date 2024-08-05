@@ -19,9 +19,9 @@ secret:
   encodedToken:
 
 image:
-  name: intel/ai-workflows  # Specify the image name that was pushed to docker hub or copied to the nodes
-  tag: torch-2.3.0-huggingface-multinode-py3.10  # Specify the image tag that was pushed to docker hub or copied to the nodes
-  pullPolicy: IfNotPresent
+  name: amr-registry.caas.intel.com/aiops/mlops-ci  # Specify the image name that was pushed to docker hub or copied to the nodes
+  tag: hramayan-ai-containers-hf-llm-main  # Specify the image tag that was pushed to docker hub or copied to the nodes
+  pullPolicy: Always
 
 securityContext:
   runAsUser:
@@ -36,13 +36,13 @@ elasticPolicy:
   maxRestarts: 30
 
 distributed:
-  workers: 4
+  workers: 2
   script: /workspace/scripts/finetune.py
   modelNameOrPath: meta-llama/Llama-2-7b-hf
   logLevel: info
 
   doTrain: true
-  doEval: true
+  doEval: false
   doBenchmark: false
   doQuantize: false
 
@@ -54,7 +54,7 @@ distributed:
     promptWithoutInput: Below is an instruction that describes a task. Write a response that appropriately completes the request.
     perDeviceBatchSize: 8
     epochs: 3
-    maxSteps: -1
+    maxSteps: 5
     gradientAccumulationSteps: 1
     learningRate: 2e-5
     ddpFindUnusedParameters: false
@@ -71,7 +71,7 @@ distributed:
     loraTargetModules: q_proj vproj
     noCuda: true
     overwriteOutputDir: true
-    bf16: true
+    bf16: false
     useIpex: true
   eval:
     perDeviceBatchSize: 8
@@ -102,20 +102,20 @@ envVars:
   hfDatasetsCache: /tmp/pvc-mount/hf_dataset_cache
   hfHome: /tmp/home
   cclWorkerCount: 1
-  httpProxy:
-  httpsProxy:
-  noProxy:
-  ftpProxy:
-  socksProxy:
+  httpProxy: http://proxy-dmz.intel.com:911
+  httpsProxy: http://proxy-dmz.intel.com:912
+  noProxy: localhost,127.0.0.1,intel.com,.intel.com,goto.intel.com,.maas,10.0.0.0/8,172.16.0.0/16,192.168.0.0/16,134.134.0.0/16,.maas-internal,.svc
+  ftpProxy: http://proxy-dmz.intel.com:911
+  socksProxy: proxy-dmz.intel.com:1080
 
 # Resources allocated to each worker
 resources:
-  cpuRequest:
-  cpuLimit:
-  memoryRequest:
-  memoryLimit:
-  nodeSelectorLabel:
-  nodeSelectorValue:
+  cpuRequest: 200
+  cpuLimit: 200
+  memoryRequest: 188Gi
+  memoryLimit: 188Gi
+  nodeSelectorLabel: node-type
+  nodeSelectorValue: gnr
 
 # Persistent volume claim storage resources
 storage:
