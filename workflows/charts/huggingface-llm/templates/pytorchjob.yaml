@@ -39,7 +39,7 @@ spec:
             - name: pytorch
               image: {{ .Values.image.name }}:{{ .Values.image.tag }}
               imagePullPolicy: {{ .Values.image.pullPolicy }}
-              command:
+              args:
                 - torchrun
                 - {{ .Values.distributed.script }}
                 - --model_name_or_path
